@@ -12,6 +12,7 @@ exports.getAllBooks = async (req, res) => {
         take: limit,
         include: {
           category: true,
+          author: true, // Relasi ke model Author (huruf kapital)
         },
       }),
       prisma.book.count(),
@@ -47,9 +48,13 @@ exports.getBooksById = async (req, res) => {
       });
     }
 
+    const book = await prisma.book.findUnique({
+      where: { id: bookId },
+    });
+
     return res.status(201).json({
       statusCode: 201,
-      data: bookId,
+      data: book,
     });
   } catch (error) {
     console.error("error", error);
@@ -62,22 +67,25 @@ exports.getBooksById = async (req, res) => {
 
 exports.createBooks = async (req, res) => {
   try {
-    const { title, author, price, categoryId } = req.body;
+    const { title, price, categoryId, authorId } = req.body;
     const parsedPrice = parseInt(price);
     const cover = req.file ? req.file.filename : null;
 
     const newBook = await prisma.book.create({
       data: {
         title,
-        author,
         price: parsedPrice,
         cover,
         category: {
           connect: { id: parseInt(categoryId) },
         },
+        author: {
+          connect: { id: parseInt(authorId) },
+        },
       },
       include: {
         category: true,
+        author: true, // Include relasi Author
       },
     });
 
@@ -88,9 +96,10 @@ exports.createBooks = async (req, res) => {
     });
   } catch (error) {
     console.error("error", error);
-    return res.status(404).json({
-      statusCode: 404,
-      message: "Eror, cannot adding new data!",
+    return res.status(500).json({
+      statusCode: 500,
+      message: "Error, cannot adding new data!",
+      error: error.message,
     });
   }
 };
@@ -98,7 +107,7 @@ exports.createBooks = async (req, res) => {
 exports.updateBooks = async (req, res) => {
   try {
     const parsedBookId = parseInt(req.params.id);
-    const { title, author, price, categoryId } = req.body;
+    const { title, price, categoryId, authorId } = req.body;
 
     const checkBook = await prisma.book.findUnique({
       where: { id: parsedBookId },
@@ -113,9 +122,9 @@ exports.updateBooks = async (req, res) => {
 
     const updateData = {
       title,
-      author,
       price: price ? parseInt(price) : undefined,
       categoryId: categoryId ? parseInt(categoryId) : undefined,
+      authorId: authorId ? parseInt(authorId) : undefined,
     };
 
     if (req.file) {
@@ -127,6 +136,7 @@ exports.updateBooks = async (req, res) => {
       data: updateData,
       include: {
         category: true,
+        author: true,
       },
     });
 

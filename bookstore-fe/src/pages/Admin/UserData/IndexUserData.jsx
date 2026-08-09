@@ -20,27 +20,27 @@ import axios from "axios";
 import Modal from "../../../components/Modal";
 import { Link } from "react-router-dom";
 
-export default function BookDataAdmin() {
-  const [users, setBooks] = useState([]);
+export default function UserDataAdmin() {
+  const [users, setUsers] = useState([]);
   const [paginations, setPaginations] = useState({
     current_page: 1,
     last_page: 1,
   });
 
-  const fetchBooks = async () => {
+  const fetchUsers = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/admin/getAllUsers",
+        "http://localhost:3000/api/admin/getAllUsersData",
       );
 
-      setBooks(response.data.data);
+      setUsers(response.data.data);
     } catch (error) {
       console.error("Error : ", error);
     }
   };
 
   useEffect(() => {
-    fetchBooks();
+    fetchUsers();
   }, []);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -116,6 +116,27 @@ export default function BookDataAdmin() {
                   ))}
                 </TableBody>
               </Table>
+              {/* Paginations */}
+              <div className="flex justify-center items-center mt-6 space-x-2">
+                <button
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={paginations.current_page === 1}
+                  onClick={() => fetchUsers(paginations.current_page - 1)}
+                >
+                  Previous
+                </button>
+                <span className="text-sm text-gray-600">
+                  Halaman {paginations.current_page} dari{" "}
+                  {paginations.last_page}
+                </span>
+                <button
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={paginations.current_page === paginations.last_page}
+                  onClick={() => fetchUsers(paginations.current_page + 1)}
+                >
+                  Next
+                </button>
+              </div>
             </div>
           </div>
         </main>

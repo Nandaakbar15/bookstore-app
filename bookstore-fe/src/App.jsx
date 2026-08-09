@@ -9,6 +9,14 @@ import "./charts/ChartjsConfig";
 import Dashboard from "./pages/Admin/Dashboard";
 import BookDataAdmin from "./pages/Admin/BookData/IndexBookData";
 import AddBookDataAdmin from "./pages/Admin/BookData/AddBookData";
+import UserDataAdmin from "./pages/Admin/UserData/IndexUserData";
+import CategoryDataAdmin from "./pages/Admin/CategoryData/IndexCategory";
+import AddCategoryPages from "./pages/Admin/CategoryData/AddCategories";
+import AuthorsDataAdmin from "./pages/Admin/AuthorData/IndexAuthorData";
+import AddAuthorsPages from "./pages/Admin/AuthorData/AddAuthorData";
+import EditBookDataAdmin from "./pages/Admin/BookData/EditBookData";
+import EditAuthorsPages from "./pages/Admin/AuthorData/EditAuthorData";
+import EditCategoryPages from "./pages/Admin/CategoryData/EditCategories";
 
 function App() {
   const location = useLocation();
@@ -25,6 +33,14 @@ function App() {
         <Route exact path="/" element={<Dashboard />} />
         <Route path="/book_data_admin" element={<BookDataAdmin />} />
         <Route path="/add_book_data" element={<AddBookDataAdmin />} />
+        <Route path="/edit_book/:id" element={<EditBookDataAdmin />} />
+        <Route path="/category_data_admin" element={<CategoryDataAdmin />} />
+        <Route path="/add_category_data" element={<AddCategoryPages />} />
+        <Route path="/edit_categories/:id" element={<EditCategoryPages />} />
+        <Route path="/author_data_admin" element={<AuthorsDataAdmin />} />
+        <Route path="/add_author_data" element={<AddAuthorsPages />} />
+        <Route path="/edit_author_data/:id" element={<EditAuthorsPages />} />
+        <Route path="/user_data_admin" element={<UserDataAdmin />} />
       </Routes>
     </>
   );

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 
 import Sidebar from "../../../partials/Sidebar";
 import Header from "../../../partials/Header";
+import FilterButton from "../../../components/DropdownFilter";
+import Banner from "../../../partials/Banner";
 
 import {
   Table,
@@ -18,34 +20,27 @@ import axios from "axios";
 import Modal from "../../../components/Modal";
 import { Link } from "react-router-dom";
 
-export default function BookDataAdmin() {
-  const [books, setBooks] = useState([]);
+export default function AuthorsDataAdmin() {
+  const [authors, setCategories] = useState([]);
   const [paginations, setPaginations] = useState({
     current_page: 1,
     last_page: 1,
   });
 
-  const [showModal, setShowModal] = useState(false);
-  const [message, setMessage] = useState("");
-
-  const fetchBooks = async () => {
+  const fetchAuthors = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/admin/getAllBooks",
+        "http://localhost:3000/api/admin/getAllAuthor",
       );
 
-      setBooks(response.data.data);
-      setPaginations({
-        current_page: response.data.data.current_page,
-        last_page: response.data.data.last_page,
-      });
+      setCategories(response.data.data);
     } catch (error) {
       console.error("Error : ", error);
     }
   };
 
   useEffect(() => {
-    fetchBooks();
+    fetchAuthors();
   }, []);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -61,23 +56,20 @@ export default function BookDataAdmin() {
 
         <main className="grow">
           <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
-            <Modal show={showModal} onClose={() => setShowModal(false)}>
-              <p>{message}</p>
-            </Modal>
             {/* Dashboard actions */}
             <div className="sm:flex sm:justify-between sm:items-center mb-8">
               {/* Left: Title */}
               <div className="mb-4 sm:mb-0">
                 <h1 className="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">
-                  Book Data
+                  Author Data
                 </h1>
 
-                <div className="mt-4">
+                <div className="mt-5">
                   <Link
-                    to="/add_book_data"
-                    className="inline-block text-white bg-blue-500 rounded-lg shadow-lg px-4 py-2 hover:bg-blue-700"
+                    to={"/add_author_data"}
+                    className="inline-block text-white px-4 py-2 rounded-lg shadow-lg bg-blue-500 hover:bg-blue-700"
                   >
-                    Add Book
+                    Add Authors
                   </Link>
                 </div>
               </div>
@@ -89,22 +81,10 @@ export default function BookDataAdmin() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="font-semibold text-[16px] px-4 py-2">
-                      Book ID
+                      Author ID
                     </TableHead>
                     <TableHead className="font-semibold text-[16px] px-4 py-2">
-                      Cover
-                    </TableHead>
-                    <TableHead className="font-semibold text-[16px] px-4 py-2">
-                      Title
-                    </TableHead>
-                    <TableHead className="font-semibold text-[16px] px-4 py-2">
-                      Author
-                    </TableHead>
-                    <TableHead className="font-semibold text-[16px] px-4 py-2">
-                      Category
-                    </TableHead>
-                    <TableHead className="font-semibold text-[16px] px-4 py-2">
-                      Price
+                      Name
                     </TableHead>
                     <TableHead className="font-semibold text-[16px] px-4 py-2">
                       Action
@@ -112,34 +92,17 @@ export default function BookDataAdmin() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {books.map((book) => (
-                    <TableRow key={book.id}>
+                  {authors.map((author) => (
+                    <TableRow key={author.id}>
                       <TableCell className="font-medium text-[16px] border border-gray-300 px-4 py-2">
-                        {book.id}
+                        {author.id}
                       </TableCell>
                       <TableCell className="font-medium text-[16px] border border-gray-300 px-4 py-2">
-                        <img
-                          src={`http://localhost:3000/images/${book.cover}`}
-                          alt={book.title}
-                          srcset=""
-                          width={"32"}
-                        />
-                      </TableCell>
-                      <TableCell className="font-medium text-[16px] border border-gray-300 px-4 py-2">
-                        {book.title}
-                      </TableCell>
-                      <TableCell className="font-medium text-[16px] border border-gray-300 px-4 py-2">
-                        {book.author.name}
-                      </TableCell>
-                      <TableCell className="font-medium text-[16px] border border-gray-300 px-4 py-2">
-                        {book.category.name}
-                      </TableCell>
-                      <TableCell className="font-medium text-[16px] border border-gray-300 px-4 py-2">
-                        Rp. {book.price}
+                        {author.name}
                       </TableCell>
                       <TableCell className="border border-gray-300 px-4 py-2 space-x-2">
                         <Link
-                          to={`/edit_book/${book.id}`}
+                          to={`/edit_author_data/${author.id}`}
                           className="inline-block text-white rounded-lg shadow-lg bg-blue-500 hover:bg-blue-700 px-4 py-2"
                         >
                           Edit
@@ -161,17 +124,17 @@ export default function BookDataAdmin() {
                 <button
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={paginations.current_page === 1}
-                  onClick={() => fetchBooks(paginations.current_page - 1)}
+                  onClick={() => fetchAuthors(paginations.current_page - 1)}
                 >
                   Previous
                 </button>
                 <span className="text-sm text-gray-600">
-                  Pages {paginations.current_page} from {paginations.last_page}
+                  Page {paginations.current_page} from {paginations.last_page}
                 </span>
                 <button
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={paginations.current_page === paginations.last_page}
-                  onClick={() => fetchBooks(paginations.current_page + 1)}
+                  onClick={() => fetchAuthors(paginations.current_page + 1)}
                 >
                   Next
                 </button>

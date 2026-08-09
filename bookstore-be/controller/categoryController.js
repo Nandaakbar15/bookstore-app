@@ -2,11 +2,27 @@ const prisma = require("../lib/prisma");
 
 exports.getAllCategories = async (req, res) => {
   try {
-    const category = await prisma.category.findMany();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const skip = (page - 1) * limit;
+
+    const [category, totalData] = await prisma.$transaction([
+      prisma.category.findMany({
+        skip: skip,
+        take: limit,
+      }),
+      prisma.category.count(),
+    ]);
 
     return res.status(200).json({
       statusCode: 200,
       data: category,
+      meta: {
+        total: totalData,
+        page: page,
+        last_page: Math.ceil(totalData / limit),
+        per_page: limit,
+      },
     });
   } catch (error) {
     console.error("Error : ", error);

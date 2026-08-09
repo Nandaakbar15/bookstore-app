@@ -24,7 +24,8 @@ export default function AddBookDataAdmin() {
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState("");
   const [title, setTitles] = useState("");
-  const [author, setAuthor] = useState("");
+  const [authors, setAuthors] = useState([]);
+  const [authorId, setAuthorId] = useState("");
   const [price, setPrice] = useState(0);
   const [cover, setCovers] = useState(null);
   const [message, setMessage] = useState("");
@@ -43,16 +44,30 @@ export default function AddBookDataAdmin() {
     }
   };
 
+  const fetchAuthors = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:3000/api/admin/getAllAuthor",
+      );
+
+      setAuthors(res.data.data);
+    } catch (error) {
+      console.error("Error : ", error);
+      setShowModal(true);
+      setMessage("Cannot fetch the data!");
+    }
+  };
+
   const addNewBook = async (e) => {
     e.preventDefault(); // Prevent form submission
 
     try {
       const formData = new FormData();
       formData.append("title", title);
-      formData.append("author", author);
       formData.append("price", price);
       formData.append("cover", cover);
       formData.append("categoryId", categoryId);
+      formData.append("authorId", authorId);
 
       const res = await axios.post(
         "http://localhost:3000/api/admin/createBooks",
@@ -69,9 +84,9 @@ export default function AddBookDataAdmin() {
 
       // Reset the form
       setTitles("");
-      setAuthor("");
       setPrice("");
       setCategoryId("");
+      setAuthorId("");
       setCovers(null);
 
       // Navigate after showing modal for 2 seconds
@@ -92,6 +107,7 @@ export default function AddBookDataAdmin() {
 
   useEffect(() => {
     fetchCategories();
+    fetchAuthors();
   }, []);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -149,15 +165,20 @@ export default function AddBookDataAdmin() {
                       >
                         Author <span className="text-red-500">*</span>
                       </label>
-                      <input
-                        type="text"
-                        id="author"
-                        value={author}
-                        onChange={(e) => setAuthor(e.target.value)}
-                        className="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
-                        placeholder="Add Author"
+                      <select
+                        id="authorId"
+                        value={authorId}
+                        onChange={(e) => setAuthorId(e.target.value)}
+                        className="block w-full px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-lg shadow-lg focus:ring-brand focus:border-brand shadow-xs placeholder:text-body"
                         required
-                      />
+                      >
+                        <option value="">-- Choose authors --</option>
+                        {authors.map((author) => (
+                          <option value={author.id} key={author.id}>
+                            {author.name}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                     <div className="mb-5">
                       <label
@@ -219,14 +240,16 @@ export default function AddBookDataAdmin() {
                     >
                       Add!
                     </button>
-                    <Link
-                      to={"/book_data_admin"}
-                      className="inline-block text-white rounded-lg shadow-lg px-4 py-2 bg-slate-500 hover:bg-slate-700"
-                    >
-                      Back
-                    </Link>
                   </form>
                 </CardContent>
+                <CardFooter>
+                  <Link
+                    to={"/book_data_admin"}
+                    className="inline-block text-white rounded-lg shadow-lg px-4 py-2 bg-slate-500 hover:bg-slate-700"
+                  >
+                    Back
+                  </Link>
+                </CardFooter>
               </Card>
             </div>
           </div>
