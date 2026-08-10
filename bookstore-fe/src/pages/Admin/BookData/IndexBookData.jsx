@@ -16,7 +16,7 @@ import {
 import axios from "axios";
 
 import Modal from "../../../components/Modal";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function BookDataAdmin() {
   const [books, setBooks] = useState([]);
@@ -28,19 +28,44 @@ export default function BookDataAdmin() {
   const [showModal, setShowModal] = useState(false);
   const [message, setMessage] = useState("");
 
-  const fetchBooks = async () => {
+  const navigate = useNavigate();
+
+  const fetchBooks = async (page = 1) => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/admin/getAllBooks",
+        `http://localhost:3000/api/admin/getAllBooks?page=${page}`,
       );
 
       setBooks(response.data.data);
       setPaginations({
-        current_page: response.data.data.current_page,
-        last_page: response.data.data.last_page,
+        current_page: response.data.meta.page,
+        last_page: response.data.meta.last_page,
       });
     } catch (error) {
       console.error("Error : ", error);
+    }
+  };
+
+  const deleteBooks = async (id) => {
+    try {
+      const res = await axios.delete(
+        `http://localhost:3000/api/admin/deleteBook/${id}`,
+      );
+
+      setMessage(res.data.message);
+      setShowModal(true);
+
+      setTimeout(() => {
+        setShowModal(false);
+        navigate("/book_data_admin");
+      }, 2000);
+
+      // refresh the data
+      fetchBooks();
+    } catch (error) {
+      console.error("Error : ", error);
+      setMessage("Error, could not delete the data!");
+      setShowModal(true);
     }
   };
 
@@ -104,7 +129,19 @@ export default function BookDataAdmin() {
                       Category
                     </TableHead>
                     <TableHead className="font-semibold text-[16px] px-4 py-2">
+                      Isbn
+                    </TableHead>
+                    <TableHead className="font-semibold text-[16px] px-4 py-2">
+                      Description
+                    </TableHead>
+                    <TableHead className="font-semibold text-[16px] px-4 py-2">
+                      Stock
+                    </TableHead>
+                    <TableHead className="font-semibold text-[16px] px-4 py-2">
                       Price
+                    </TableHead>
+                    <TableHead className="font-semibold text-[16px] px-4 py-2">
+                      Publisher
                     </TableHead>
                     <TableHead className="font-semibold text-[16px] px-4 py-2">
                       Action
@@ -135,7 +172,19 @@ export default function BookDataAdmin() {
                         {book.category.name}
                       </TableCell>
                       <TableCell className="font-medium text-[16px] border border-gray-300 px-4 py-2">
+                        {book.isbn || "-"}
+                      </TableCell>
+                      <TableCell className="font-medium text-[16px] border border-gray-300 px-4 py-2">
+                        {book.description || "-"}
+                      </TableCell>
+                      <TableCell className="font-medium text-[16px] border border-gray-300 px-4 py-2">
+                        {book.stock || "-"}
+                      </TableCell>
+                      <TableCell className="font-medium text-[16px] border border-gray-300 px-4 py-2">
                         Rp. {book.price}
+                      </TableCell>
+                      <TableCell className="font-medium text-[16px] border border-gray-300 px-4 py-2">
+                        {book.publisher?.name || "-"}
                       </TableCell>
                       <TableCell className="border border-gray-300 px-4 py-2 space-x-2">
                         <Link
@@ -147,6 +196,7 @@ export default function BookDataAdmin() {
 
                         <button
                           type="submit"
+                          onClick={() => deleteBooks(book.id)}
                           className="inline-bloeck text-white rounded-lg shadow-lg px-4 py-2 bg-red-500 hover:bg-red-700"
                         >
                           Delete

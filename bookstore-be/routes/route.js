@@ -24,6 +24,14 @@ const {
   deleteAuthor,
 } = require("../controller/authorController");
 
+const {
+  getAllPublisher,
+  getPublisherById,
+  createPublisher,
+  updatePublisher,
+  deletePublisher,
+} = require("../controller/publisherController");
+
 const { getAllUserData, deleteUser } = require("../controller/userController");
 
 const { login, logout } = require("../controller/authController");
@@ -59,5 +67,12 @@ router.get("/api/admin/getAuthorById/:id", getAuthorById);
 router.post("/api/admin/createAuthor", createAuthor);
 router.put("/api/admin/updateAuthor/:id", updateAuthor);
 router.delete("/api/admin/deleteAuthor/:id", deleteAuthor);
+
+// routes publisher
+router.get("/api/admin/getAllPublisher", getAllPublisher);
+router.get("/api/admin/getPublisherById/:id", getPublisherById);
+router.post("/api/admin/createPublisher", createPublisher);
+router.put("/api/admin/updatePublisher/:id", updatePublisher);
+router.delete("/api/admin/deletePublisher/:id", deletePublisher);
 
 module.exports = router;

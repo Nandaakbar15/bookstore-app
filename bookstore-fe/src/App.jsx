@@ -17,6 +17,9 @@ import AddAuthorsPages from "./pages/Admin/AuthorData/AddAuthorData";
 import EditBookDataAdmin from "./pages/Admin/BookData/EditBookData";
 import EditAuthorsPages from "./pages/Admin/AuthorData/EditAuthorData";
 import EditCategoryPages from "./pages/Admin/CategoryData/EditCategories";
+import PublisherDataAdmin from "./pages/Admin/PublisherData/IndexPublisher";
+import AddPublisherPages from "./pages/Admin/PublisherData/AddPublisher";
+import EditPublisherPages from "./pages/Admin/PublisherData/EditPublisher";
 
 function App() {
   const location = useLocation();
@@ -40,6 +43,9 @@ function App() {
         <Route path="/author_data_admin" element={<AuthorsDataAdmin />} />
         <Route path="/add_author_data" element={<AddAuthorsPages />} />
         <Route path="/edit_author_data/:id" element={<EditAuthorsPages />} />
+        <Route path="/publisher_data_admin" element={<PublisherDataAdmin />} />
+        <Route path="/add_publisher_data" element={<AddPublisherPages />} />
+        <Route path="/edit_publisher_data" element={<EditPublisherPages />} />
         <Route path="/user_data_admin" element={<UserDataAdmin />} />
       </Routes>
     </>

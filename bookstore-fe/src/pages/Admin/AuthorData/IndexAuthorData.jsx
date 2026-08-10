@@ -2,13 +2,10 @@ import { useEffect, useState } from "react";
 
 import Sidebar from "../../../partials/Sidebar";
 import Header from "../../../partials/Header";
-import FilterButton from "../../../components/DropdownFilter";
-import Banner from "../../../partials/Banner";
 
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -17,23 +14,54 @@ import {
 
 import axios from "axios";
 
+import { Link, useNavigate } from "react-router-dom";
+
 import Modal from "../../../components/Modal";
-import { Link } from "react-router-dom";
 
 export default function AuthorsDataAdmin() {
-  const [authors, setCategories] = useState([]);
+  const [authors, setAuthors] = useState([]);
   const [paginations, setPaginations] = useState({
     current_page: 1,
     last_page: 1,
   });
 
-  const fetchAuthors = async () => {
+  const [message, setMessage] = useState("");
+  const [showModal, setShowModal] = useState(false);
+
+  const navigate = useNavigate();
+
+  const fetchAuthors = async (page = 1) => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/admin/getAllAuthor",
+        `http://localhost:3000/api/admin/getAllAuthor?page=${page}`,
       );
 
-      setCategories(response.data.data);
+      setAuthors(response.data.data);
+      setPaginations({
+        current_page: response.data.meta.page,
+        last_page: response.data.meta.last_page,
+      });
+    } catch (error) {
+      console.error("Error : ", error);
+    }
+  };
+
+  const deleteAuthors = async (id) => {
+    try {
+      const res = await axios.delete(
+        `http://localhost:3000/api/admin/deleteAuthor/${id}`,
+      );
+
+      setMessage(res.data.message);
+      setShowModal(true);
+
+      setTimeout(() => {
+        setShowModal(false);
+        navigate("/author_data_admin");
+      }, 2000);
+
+      // refresh the data
+      fetchAuthors();
     } catch (error) {
       console.error("Error : ", error);
     }
@@ -110,6 +138,7 @@ export default function AuthorsDataAdmin() {
 
                         <button
                           type="submit"
+                          onClick={() => deleteAuthors(author.id)}
                           className="inline-bloeck text-white rounded-lg shadow-lg px-4 py-2 bg-red-500 hover:bg-red-700"
                         >
                           Delete

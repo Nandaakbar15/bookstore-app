@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
 import Sidebar from "../../../partials/Sidebar";
 import Header from "../../../partials/Header";
@@ -22,11 +22,16 @@ import { Link, useNavigate } from "react-router-dom";
 
 export default function AddBookDataAdmin() {
   const [categories, setCategories] = useState([]);
+  const [publishers, setPublishers] = useState([]);
   const [categoryId, setCategoryId] = useState("");
+  const [publisherId, setPublisherId] = useState("");
   const [title, setTitles] = useState("");
   const [authors, setAuthors] = useState([]);
   const [authorId, setAuthorId] = useState("");
   const [price, setPrice] = useState(0);
+  const [isbn, setIsbn] = useState("");
+  const [description, setDescription] = useState("");
+  const [stock, setStock] = useState(0);
   const [cover, setCovers] = useState(null);
   const [message, setMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -35,7 +40,7 @@ export default function AddBookDataAdmin() {
   const fetchCategories = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/admin/getAllCategories",
+        "http://localhost:3000/api/admin/getAllCategories?limit=100",
       );
 
       setCategories(response.data.data);
@@ -47,7 +52,7 @@ export default function AddBookDataAdmin() {
   const fetchAuthors = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/api/admin/getAllAuthor",
+        "http://localhost:3000/api/admin/getAllAuthor?limit=100",
       );
 
       setAuthors(res.data.data);
@@ -55,6 +60,18 @@ export default function AddBookDataAdmin() {
       console.error("Error : ", error);
       setShowModal(true);
       setMessage("Cannot fetch the data!");
+    }
+  };
+
+  const fetchPublisher = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:3000/api/admin/getAllPublisher?limit=100",
+      );
+
+      setPublishers(res.data.data);
+    } catch (error) {
+      console.error("Error : ", error);
     }
   };
 
@@ -67,7 +84,11 @@ export default function AddBookDataAdmin() {
       formData.append("price", price);
       formData.append("cover", cover);
       formData.append("categoryId", categoryId);
+      formData.append("publisherId", publisherId);
       formData.append("authorId", authorId);
+      formData.append("isbn", isbn);
+      formData.append("description", description);
+      formData.append("stock", stock);
 
       const res = await axios.post(
         "http://localhost:3000/api/admin/createBooks",
@@ -87,6 +108,10 @@ export default function AddBookDataAdmin() {
       setPrice("");
       setCategoryId("");
       setAuthorId("");
+      setPublisherId("");
+      setStock(0);
+      setIsbn("");
+      setDescription("");
       setCovers(null);
 
       // Navigate after showing modal for 2 seconds
@@ -108,6 +133,7 @@ export default function AddBookDataAdmin() {
   useEffect(() => {
     fetchCategories();
     fetchAuthors();
+    fetchPublisher();
   }, []);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -169,7 +195,7 @@ export default function AddBookDataAdmin() {
                         id="authorId"
                         value={authorId}
                         onChange={(e) => setAuthorId(e.target.value)}
-                        className="block w-full px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-lg shadow-lg focus:ring-brand focus:border-brand shadow-xs placeholder:text-body"
+                        className="block w-full px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-lg shadow-lg focus:ring-brand focus:border-brand placeholder:text-body"
                         required
                       >
                         <option value="">-- Choose authors --</option>
@@ -179,6 +205,61 @@ export default function AddBookDataAdmin() {
                           </option>
                         ))}
                       </select>
+                    </div>
+                    <div className="mb-5">
+                      <label
+                        htmlFor="publisherId"
+                        className="block mb-2.5 text-sm font-medium text-heading"
+                      >
+                        Publisher <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        id="publisherId"
+                        value={publisherId}
+                        onChange={(e) => setPublisherId(e.target.value)}
+                        className="block w-full px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-lg shadow-lg focus:ring-brand focus:border-brand placeholder:text-body"
+                        required
+                      >
+                        <option value="">-- Choose publisher --</option>
+                        {publishers.map((publisher) => (
+                          <option value={publisher.id} key={publisher.id}>
+                            {publisher.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="mb-5">
+                      <label
+                        htmlFor="isbn"
+                        className="block mb-2.5 text-sm font-medium text-heading"
+                      >
+                        isbn <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="isbn"
+                        value={isbn}
+                        onChange={(e) => setIsbn(e.target.value)}
+                        className="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
+                        placeholder="Add isbn.."
+                        required
+                      />
+                    </div>
+                    <div className="mb-5">
+                      <label
+                        htmlFor="description"
+                        className="block mb-2.5 text-sm font-medium text-heading"
+                      >
+                        Description <span className="text-red-500">*</span>
+                      </label>
+                      <textarea
+                        id="description"
+                        rows="4"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-lg focus:ring-brand focus:border-brand block w-full p-3.5 shadow-lg placeholder:text-body"
+                        placeholder="Write your thoughts here..."
+                      ></textarea>
                     </div>
                     <div className="mb-5">
                       <label
@@ -192,7 +273,24 @@ export default function AddBookDataAdmin() {
                         id="price"
                         value={price}
                         onChange={(e) => setPrice(e.target.value)}
-                        className="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
+                        className="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-lg placeholder:text-body"
+                        placeholder="Add Price"
+                        required
+                      />
+                    </div>
+                    <div className="mb-5">
+                      <label
+                        htmlFor="stock"
+                        className="block mb-2.5 text-sm font-medium text-heading"
+                      >
+                        Stock <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        id="stock"
+                        value={stock}
+                        onChange={(e) => setStock(e.target.value)}
+                        className="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-lg placeholder:text-body"
                         placeholder="Add Price"
                         required
                       />
@@ -208,7 +306,7 @@ export default function AddBookDataAdmin() {
                         id="categoryId"
                         value={categoryId}
                         onChange={(e) => setCategoryId(e.target.value)}
-                        className="block w-full px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-lg shadow-lg focus:ring-brand focus:border-brand shadow-xs placeholder:text-body"
+                        className="block w-full px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-lg shadow-lg focus:ring-brand focus:border-brand placeholder:text-body"
                         required
                       >
                         <option value="">Choose category</option>
@@ -230,7 +328,7 @@ export default function AddBookDataAdmin() {
                         type="file"
                         id="cover"
                         onChange={(e) => setCovers(e.target.files[0])}
-                        className="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
+                        className="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-lg placeholder:text-body"
                         required
                       />
                     </div>

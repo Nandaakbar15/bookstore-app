@@ -13,6 +13,7 @@ exports.getAllBooks = async (req, res) => {
         include: {
           category: true,
           author: true, // Relasi ke model Author (huruf kapital)
+          publisher: true,
         },
       }),
       prisma.book.count(),
@@ -67,20 +68,36 @@ exports.getBooksById = async (req, res) => {
 
 exports.createBooks = async (req, res) => {
   try {
-    const { title, price, categoryId, authorId } = req.body;
+    const {
+      title,
+      price,
+      isbn,
+      description,
+      stock,
+      categoryId,
+      authorId,
+      publisherId,
+    } = req.body;
     const parsedPrice = parseInt(price);
+    const parsedStock = parseInt(stock);
     const cover = req.file ? req.file.filename : null;
 
     const newBook = await prisma.book.create({
       data: {
         title,
         price: parsedPrice,
+        isbn,
+        description,
+        stock: parsedStock,
         cover,
         category: {
           connect: { id: parseInt(categoryId) },
         },
         author: {
           connect: { id: parseInt(authorId) },
+        },
+        publisher: {
+          connect: { id: parseInt(publisherId) },
         },
       },
       include: {
@@ -107,7 +124,16 @@ exports.createBooks = async (req, res) => {
 exports.updateBooks = async (req, res) => {
   try {
     const parsedBookId = parseInt(req.params.id);
-    const { title, price, categoryId, authorId } = req.body;
+    const {
+      title,
+      price,
+      isbn,
+      description,
+      stock,
+      categoryId,
+      authorId,
+      publisherId,
+    } = req.body;
 
     const checkBook = await prisma.book.findUnique({
       where: { id: parsedBookId },
@@ -123,8 +149,12 @@ exports.updateBooks = async (req, res) => {
     const updateData = {
       title,
       price: price ? parseInt(price) : undefined,
+      isbn,
+      description,
+      stock: stock ? parseInt(stock) : undefined,
       categoryId: categoryId ? parseInt(categoryId) : undefined,
       authorId: authorId ? parseInt(authorId) : undefined,
+      publisherId: publisherId ? parseInt(publisherId) : undefined,
     };
 
     if (req.file) {
