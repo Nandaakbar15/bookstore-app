@@ -2,18 +2,8 @@ import { use, useEffect, useState } from "react";
 
 import Sidebar from "../../../partials/Sidebar";
 import Header from "../../../partials/Header";
-import FilterButton from "../../../components/DropdownFilter";
-import Banner from "../../../partials/Banner";
 
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
 import axios from "axios";
 

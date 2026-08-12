@@ -3,15 +3,7 @@ import Sidebar from "../../../partials/Sidebar";
 import Header from "../../../partials/Header";
 import { useState } from "react";
 
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Link, useNavigate } from "react-router-dom";
 
 import Modal from "../../../components/Modal";

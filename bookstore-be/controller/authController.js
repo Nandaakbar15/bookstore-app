@@ -40,12 +40,44 @@ exports.login = async (req, res) => {
       statusCode: 200,
       message: "Login successful!",
       token,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role, // Kirim role ke frontend
+      },
     });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({
       statusCode: 500,
       message: "Internal Server Error",
+    });
+  }
+};
+
+exports.register = async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await prisma.user.create({
+      data: {
+        username,
+        email,
+        password: hashedPassword,
+      },
+    });
+
+    return res.status(200).json({
+      statusCode: 200,
+      message: "Register success!",
+    });
+  } catch (error) {
+    console.error("Error : ", error);
+    return res.status(500).json({
+      statusCode: 500,
+      message: "Error, register failed!",
     });
   }
 };

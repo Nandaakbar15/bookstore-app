@@ -34,7 +34,11 @@ const {
 
 const { getAllUserData, deleteUser } = require("../controller/userController");
 
-const { login, logout } = require("../controller/authController");
+const { login, logout, register } = require("../controller/authController");
+const {
+  getBookData,
+  detailsBook,
+} = require("../controller/customerController");
 
 router.get("/", (req, res) => {
   res.json({
@@ -42,6 +46,10 @@ router.get("/", (req, res) => {
     message: "Bookstore App Backend",
   });
 });
+
+// routes login and register
+router.post("/api/login", login);
+router.post("/api/register", register);
 
 // routes user
 router.get("/api/admin/getAllUsersData", getAllUserData);
@@ -74,5 +82,9 @@ router.get("/api/admin/getPublisherById/:id", getPublisherById);
 router.post("/api/admin/createPublisher", createPublisher);
 router.put("/api/admin/updatePublisher/:id", updatePublisher);
 router.delete("/api/admin/deletePublisher/:id", deletePublisher);
+
+// routes customers
+router.get("/api/customers/getBooksData", getBookData);
+router.get("/api/customers/detailBook/:id", detailsBook);
 
 module.exports = router;

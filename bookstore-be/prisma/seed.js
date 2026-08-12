@@ -13,6 +13,7 @@ async function main() {
       username: "adminbookstore",
       // Simpan password yang sudah di-hash
       password: hashedPassword,
+      role: "admin",
     },
   ];
 

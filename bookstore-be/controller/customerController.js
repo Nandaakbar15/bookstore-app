@@ -12,6 +12,8 @@ exports.getBookData = async (req, res) => {
         take: limit,
         include: {
           category: true, // Relasi ke Categories
+          author: true, // Relasi ke model Author (huruf kapital)
+          publisher: true,
         },
       }),
       prisma.book.count(),
@@ -42,6 +44,11 @@ exports.detailsBook = async (req, res) => {
 
     const book = await prisma.book.findUnique({
       where: { id: parsedBookId },
+      include: {
+        author: true,
+        publisher: true,
+        category: true,
+      },
     });
 
     return res.status(201).json({

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 
 import "./css/style.css";
 
@@ -20,6 +20,11 @@ import EditCategoryPages from "./pages/Admin/CategoryData/EditCategories";
 import PublisherDataAdmin from "./pages/Admin/PublisherData/IndexPublisher";
 import AddPublisherPages from "./pages/Admin/PublisherData/AddPublisher";
 import EditPublisherPages from "./pages/Admin/PublisherData/EditPublisher";
+import CustomerPages from "./pages/Customers/CustomerPage";
+import ShopBooksPages from "./pages/Customers/ShopBooksPage";
+import LoginPages from "./pages/LoginPages";
+import DetailBooksPages from "./pages/Customers/DetailBooksPage";
+import RegisterPages from "./pages/RegisterPage";
 
 function App() {
   const location = useLocation();
@@ -33,7 +38,13 @@ function App() {
   return (
     <>
       <Routes>
-        <Route exact path="/" element={<Dashboard />} />
+        <Route path="/" element={<Navigate to={"/customer_pages"} />} />
+        <Route path="/customer_pages" element={<CustomerPages />} />
+        <Route path="/shopbooks" element={<ShopBooksPages />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/detailBooks/:id" element={<DetailBooksPages />} />
+        <Route path="/loginPages" element={<LoginPages />} />
+        <Route path="/registerPages" element={<RegisterPages />} />
         <Route path="/book_data_admin" element={<BookDataAdmin />} />
         <Route path="/add_book_data" element={<AddBookDataAdmin />} />
         <Route path="/edit_book/:id" element={<EditBookDataAdmin />} />
