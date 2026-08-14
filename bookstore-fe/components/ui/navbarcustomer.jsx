@@ -13,6 +13,8 @@ import {
   Sparkles,
   Star,
   X,
+  LogOut,
+  User,
 } from "lucide-react";
 
 import axios from "axios";
@@ -21,6 +23,7 @@ export default function NavbarCustomer() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [bagCount, setBagCount] = useState(0);
   const [username, setUsername] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
     // Ambil nama user yang tersimpan di localStorage
@@ -29,6 +32,20 @@ export default function NavbarCustomer() {
       setUsername(savedUsername);
     }
   }, []);
+
+  // Fungsi untuk Logout
+  const handleLogout = () => {
+    // Hapus data autentikasi dari localStorage
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("username");
+
+    // Reset state & redirect ke halaman login
+    setUsername("");
+    setDropdownOpen(false);
+    navigate("/loginPages");
+  };
+
   return (
     <div>
       <header className="relative z-20 border-b border-ink/10 bg-paper/95 backdrop-blur-sm">
@@ -83,13 +100,58 @@ export default function NavbarCustomer() {
 
             {/* Tampilkan Nama jika sudah login, atau Tombol Sign In jika belum */}
             {username ? (
-              <span className="font-semibold text-lg text-gray-800 ml-2">
-                Hi, {username} 👋
-              </span>
+              <div className="relative">
+                {/* Tombol Nama User untuk Toggle Dropdown */}
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 text-violet-600 font-bold">
+                    {username.charAt(0).toUpperCase()}
+                  </div>
+                  <span>Hi, {username}</span>
+                  <ChevronDown
+                    size={16}
+                    className={`transition-transform duration-200 ${
+                      dropdownOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {/* Menu Dropdown */}
+                {dropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 rounded-xl bg-white dark:bg-gray-800 p-2 shadow-xl border border-gray-100 dark:border-gray-700 z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700 mb-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Signed in as
+                      </p>
+                      <p className="text-sm font-semibold text-gray-800 dark:text-white truncate">
+                        {username}
+                      </p>
+                    </div>
+
+                    {/* Opsional: Tambah link Profile/Order jika perlu */}
+                    {/* 
+        <button className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <User size={16} />
+          Profile
+        </button> 
+        */}
+
+                    <button
+                      onClick={handleLogout}
+                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                    >
+                      <LogOut size={16} />
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
               <Link
                 to={"/loginPages"}
-                className="inline-block text-white rounded-lg shadow-lg px-4 py-2 bg-slate-500 hover:bg-slate-700"
+                className="inline-block text-white rounded-lg shadow-lg px-4 py-2 bg-slate-500 hover:bg-slate-700 transition-colors"
               >
                 Sign In
               </Link>
